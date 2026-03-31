@@ -1,4 +1,21 @@
 # General
 .DS_Store
 .idea/
+.vscode/
 Thumbs.db
+
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfvars
+*_override.tf
+*_override.tf.json
+.terraform.lock.hcl
+.terraformrc
+.tfsec/
+certificate.crt
+crash.log
+override.tf
+override.tf.json
+terraform.rc
