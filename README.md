@@ -1,5 +1,7 @@
 # terraform-aws-ghes
 
+Terraform module for launching a GitHub Enterprise Server appliance on AWS.
+
 ## Getting started
 
 ### Requirements
