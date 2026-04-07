@@ -8,6 +8,18 @@ Terraform module for launching a [GitHub Enterprise Server] appliance on AWS.
 
 - [Terraform] 1.14+
 
+### Usage instructions
+
+<!-- x-release-please-start-version -->
+
+```terraform
+module "ghes" {
+  source = "git:github.com/hachinekoresearch/terraform-aws-ghes.git?ref=v0.0.0"
+}
+```
+
+<!-- x-release-please-end -->
+
 ## License
 
 © 2026 [Hachineko Research].\
