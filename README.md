@@ -20,6 +20,15 @@ module "ghes" {
 
 <!-- x-release-please-end -->
 
+#### Finding the GHES AMI ID
+
+```bash
+aws ec2 describe-images \
+  --output "text" \
+  --owners "895557238572" \
+  --query "sort_by(Images,&Name)[*].{Name:Name,ImageID:ImageId}"
+```
+
 ## License
 
 © 2026 [Hachineko Research].\
