@@ -23,8 +23,9 @@ module "ghes" {
 ## License
 
 © 2026 [Hachineko Research].\
-All rights reserved.
+Made available under the terms of the [MIT Licence].
 
 [github enterprise server]: https://docs.github.com/en/enterprise-server
 [hachineko research]: https://hachineko.io
+[mit licence]: LICENSE.md
 [terraform]: https://developer.hashicorp.com/terraform

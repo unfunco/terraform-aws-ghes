@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Daniel Morris <unfunco@github.com>
+// SPDX-License-Identifier: MIT
+
 variable "admin_allowed_cidr_blocks" {
   default     = []
   description = "CIDR blocks allowed to reach the GHES administrative shell on port 122 and the management console on port 8443."

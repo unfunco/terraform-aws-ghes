@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Daniel Morris <unfunco@github.com>
+// SPDX-License-Identifier: MIT
+
 data "aws_partition" "this" {
   count = var.create ? 1 : 0
 }

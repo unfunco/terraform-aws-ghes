@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Daniel Morris <unfunco@github.com>
+// SPDX-License-Identifier: MIT
+
 locals {
   create_eip                = var.create && var.create_eip
   create_kms_key            = var.create && var.kms_key_arn == null
