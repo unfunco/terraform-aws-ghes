@@ -1,3 +1,16 @@
+variable "admin_allowed_cidr_blocks" {
+  default     = []
+  description = "CIDR blocks allowed to reach the GHES administrative shell on port 122 and the management console on port 8443."
+  type        = list(string)
+
+  validation {
+    condition = alltrue([
+      for cidr_block in var.admin_allowed_cidr_blocks : can(cidrhost(cidr_block, 0))
+    ])
+    error_message = "admin_allowed_cidr_blocks must contain valid IPv4 CIDR blocks."
+  }
+}
+
 variable "ami_id" {
   default     = null
   description = "AMI ID for the GHES appliance. When null, the module uses the current AWS region entry from ami_id_by_region."
@@ -11,7 +24,7 @@ variable "ami_id" {
 
 variable "ami_id_by_region" {
   default     = {}
-  description = "AWS region to GHES AMI ID map. Set the current region entry, or set ami_id directly."
+  description = "AWS region-to-GHES AMI ID map. Set the current region entry, or set ami_id directly."
   type        = map(string)
 
   validation {
@@ -20,6 +33,12 @@ variable "ami_id_by_region" {
     ])
     error_message = "ami_id_by_region values must be empty strings or valid AWS AMI IDs."
   }
+}
+
+variable "availability_zone" {
+  default     = null
+  description = "Availability Zone for the module-managed subnet. When null, the module uses the first available zone."
+  type        = string
 }
 
 variable "create" {
@@ -36,109 +55,8 @@ variable "create_eip" {
 
 variable "create_vpc" {
   default     = true
-  description = "Whether to create a VPC and subnet for the GHES appliance."
+  description = "Whether to create the VPC and subnet for the GHES appliance."
   type        = bool
-}
-
-variable "create_vpc_flow_logs" {
-  default     = true
-  description = "Whether to enable VPC flow logs for the module-managed VPC."
-  type        = bool
-}
-
-variable "existing_subnet_id" {
-  default     = null
-  description = "Subnet ID to use when create_vpc is false."
-  type        = string
-
-  validation {
-    condition     = !var.create || var.create_vpc || var.existing_subnet_id != null
-    error_message = "existing_subnet_id must be provided when create_vpc is false."
-  }
-
-  validation {
-    condition     = !var.create || !var.create_vpc || var.existing_subnet_id == null
-    error_message = "existing_subnet_id must be null when create_vpc is true."
-  }
-}
-
-variable "vpc_cidr_block" {
-  default     = "10.0.0.0/16"
-  description = "CIDR block for the module-managed VPC."
-  type        = string
-
-  validation {
-    condition     = can(cidrhost(var.vpc_cidr_block, 0))
-    error_message = "vpc_cidr_block must be a valid IPv4 CIDR block."
-  }
-}
-
-variable "subnet_cidr_block" {
-  default     = "10.0.0.0/24"
-  description = "CIDR block for the module-managed subnet."
-  type        = string
-
-  validation {
-    condition     = can(cidrhost(var.subnet_cidr_block, 0))
-    error_message = "subnet_cidr_block must be a valid IPv4 CIDR block."
-  }
-}
-
-variable "availability_zone" {
-  default     = null
-  description = "Availability Zone for the module-managed subnet. When null, the module uses the first available zone."
-  type        = string
-}
-
-variable "kms_key_arn" {
-  default     = null
-  description = "KMS key ARN for encrypted resources. When null, the module creates one key."
-  type        = string
-
-  validation {
-    condition     = var.kms_key_arn == null || startswith(var.kms_key_arn, "arn:")
-    error_message = "kms_key_arn must be a KMS key ARN when provided."
-  }
-}
-
-variable "log_retention_in_days" {
-  default     = 365
-  description = "Retention period in days for module-managed CloudWatch log groups."
-  type        = number
-
-  validation {
-    condition     = var.log_retention_in_days > 0
-    error_message = "log_retention_in_days must be greater than zero."
-  }
-}
-
-variable "instance_type" {
-  default     = "r5.2xlarge"
-  description = "EC2 instance type for the GHES appliance."
-  type        = string
-}
-
-variable "instance_profile_name" {
-  default     = null
-  description = "IAM instance profile name to attach to the GHES appliance."
-  type        = string
-}
-
-variable "key_name" {
-  default     = null
-  description = "Optional EC2 key pair name to associate with the GHES appliance."
-  type        = string
-}
-
-variable "root_volume_size" {
-  default     = 400
-  description = "Size in GiB for the encrypted GHES root disk. GHES currently requires at least 400 GiB, and this disk is separate from the data volume."
-  type        = number
-
-  validation {
-    condition     = var.root_volume_size >= 400
-    error_message = "root_volume_size must be at least 400 GiB for current GHES releases."
-  }
 }
 
 variable "data_volume_device_name" {
@@ -163,29 +81,30 @@ variable "data_volume_size" {
   }
 }
 
-variable "web_allowed_cidr_blocks" {
-  default     = []
-  description = "CIDR blocks allowed to reach the GHES web interface on ports 80 and 443."
-  type        = list(string)
+variable "enable_flow_logs" {
+  default     = true
+  description = "Whether to enable VPC flow logs for the module-managed VPC. This must be false when create_vpc is false."
+  type        = bool
 
   validation {
-    condition = alltrue([
-      for cidr_block in var.web_allowed_cidr_blocks : can(cidrhost(cidr_block, 0))
-    ])
-    error_message = "web_allowed_cidr_blocks must contain valid IPv4 CIDR blocks."
+    condition     = !var.create || var.create_vpc || !var.enable_flow_logs
+    error_message = "enable_flow_logs must be false when create_vpc is false."
   }
 }
 
-variable "admin_allowed_cidr_blocks" {
-  default     = []
-  description = "CIDR blocks allowed to reach the GHES administrative shell on port 122 and the management console on port 8443."
-  type        = list(string)
+variable "existing_subnet_id" {
+  default     = null
+  description = "Subnet ID to use when create_vpc is false."
+  type        = string
 
   validation {
-    condition = alltrue([
-      for cidr_block in var.admin_allowed_cidr_blocks : can(cidrhost(cidr_block, 0))
-    ])
-    error_message = "admin_allowed_cidr_blocks must contain valid IPv4 CIDR blocks."
+    condition     = !var.create || var.create_vpc || var.existing_subnet_id != null
+    error_message = "existing_subnet_id must be provided when create_vpc is false."
+  }
+
+  validation {
+    condition     = !var.create || !var.create_vpc || var.existing_subnet_id == null
+    error_message = "existing_subnet_id must be null when create_vpc is true."
   }
 }
 
@@ -202,8 +121,94 @@ variable "git_ssh_allowed_cidr_blocks" {
   }
 }
 
+variable "instance_profile_name" {
+  default     = null
+  description = "IAM instance profile name to attach to the GHES appliance."
+  type        = string
+}
+
+variable "instance_type" {
+  default     = "r5.2xlarge"
+  description = "EC2 instance type for the GHES appliance."
+  type        = string
+}
+
+variable "key_name" {
+  default     = null
+  description = "Optional EC2 key pair name to associate with the GHES appliance."
+  type        = string
+}
+
+variable "kms_key_arn" {
+  default     = null
+  description = "KMS key ARN for encrypted resources. When null, the module creates a key."
+  type        = string
+
+  validation {
+    condition     = var.kms_key_arn == null || startswith(var.kms_key_arn, "arn:")
+    error_message = "kms_key_arn must be a KMS key ARN when provided."
+  }
+}
+
+variable "log_retention_in_days" {
+  default     = 365
+  description = "Retention period in days for module-managed CloudWatch log groups."
+  type        = number
+
+  validation {
+    condition     = var.log_retention_in_days > 0
+    error_message = "log_retention_in_days must be greater than zero."
+  }
+}
+
+variable "root_volume_size" {
+  default     = 400
+  description = "Size in GiB for the encrypted GHES root disk. GHES currently requires at least 400 GiB, and this disk is separate from the data volume."
+  type        = number
+
+  validation {
+    condition     = var.root_volume_size >= 400
+    error_message = "root_volume_size must be at least 400 GiB for current GHES releases."
+  }
+}
+
+variable "subnet_cidr_block" {
+  default     = "10.0.0.0/24"
+  description = "CIDR block for the module-managed subnet."
+  type        = string
+
+  validation {
+    condition     = can(cidrhost(var.subnet_cidr_block, 0))
+    error_message = "subnet_cidr_block must be a valid IPv4 CIDR block."
+  }
+}
+
 variable "tags" {
   default     = {}
   description = "Additional tags to apply to module-managed resources."
   type        = map(string)
+}
+
+variable "vpc_cidr_block" {
+  default     = "10.0.0.0/16"
+  description = "CIDR block for the module-managed VPC."
+  type        = string
+
+  validation {
+    condition     = can(cidrhost(var.vpc_cidr_block, 0))
+    error_message = "vpc_cidr_block must be a valid IPv4 CIDR block."
+  }
+}
+
+variable "web_allowed_cidr_blocks" {
+  default     = []
+  description = "CIDR blocks allowed to reach the GHES web interface on ports 80 and 443."
+  type        = list(string)
+
+  validation {
+    condition = alltrue([
+      for cidr_block in var.web_allowed_cidr_blocks : can(cidrhost(cidr_block, 0))
+    ])
+    error_message = "web_allowed_cidr_blocks must contain valid IPv4 CIDR blocks."
+  }
 }

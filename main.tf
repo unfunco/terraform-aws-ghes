@@ -1,8 +1,9 @@
 locals {
-  create_eip           = var.create && var.create_eip
-  create_kms_key       = var.create && var.kms_key_arn == null
-  create_vpc           = var.create && var.create_vpc
-  create_vpc_flow_logs = var.create && var.create_vpc && var.create_vpc_flow_logs
+  create_eip                = var.create && var.create_eip
+  create_kms_key            = var.create && var.kms_key_arn == null
+  create_vpc                = var.create && var.create_vpc
+  create_vpc_flow_log_group = var.create && var.create_vpc
+  create_vpc_flow_logs      = local.create_vpc_flow_log_group && var.enable_flow_logs
 
   default_tags = merge({
     "terraform-module" = "hachinekoresearch/terraform-aws-ghes"
@@ -164,7 +165,7 @@ resource "aws_vpc_security_group_ingress_rule" "admin_ssh" {
 }
 
 resource "aws_cloudwatch_log_group" "vpc_flow_logs" {
-  count = local.create_vpc_flow_logs ? 1 : 0
+  count = local.create_vpc_flow_log_group ? 1 : 0
 
   kms_key_id        = local.resolved_kms_key_arn
   log_group_class   = "STANDARD"
