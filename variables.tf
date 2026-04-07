@@ -26,7 +26,10 @@ variable "ami_id" {
 }
 
 variable "ami_id_by_region" {
-  default     = {}
+  default = {
+    "eu-west-1" = "ami-0dab408a3ff685ac9" # GHES 3.19.4
+  }
+
   description = "AWS region-to-GHES AMI ID map. Set the current region entry, or set ami_id directly."
   type        = map(string)
 

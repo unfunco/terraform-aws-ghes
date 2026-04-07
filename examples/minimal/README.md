@@ -8,14 +8,13 @@ and explicit CIDR ranges for web and administrative access.
 terraform init
 ```
 
-```bash
-terraform apply \
-  -var='ami_id=ami-0123456789abcdef0' \
-  -var='web_allowed_cidr_blocks=["203.0.113.0/24"]' \
-  -var='admin_allowed_cidr_blocks=["198.51.100.10/32"]' \
-  -var='git_ssh_allowed_cidr_blocks=["203.0.113.0/24"]'
+Create a `auto.tfvars` file with the following content before planning or
+applying, this will ensure that the created resources are tagged.
+
+```hcl
+tags = { "owner" = "unfunco" }
 ```
 
-You can find the correct GHES AMI ID in the GitHub Enterprise Server release
-portal or by using the AWS CLI to list GitHub-published AMIs for your AWS
-partition.
+```bash
+terraform apply
+```
