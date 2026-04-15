@@ -46,6 +46,14 @@ output "subnet_id" {
   value       = local.resolved_subnet_id
 }
 
+output "subnet_ids_by_availability_zone" {
+  description = "Subnet IDs keyed by Availability Zone for module-managed subnets."
+  value = {
+    for availability_zone, subnet in aws_subnet.this :
+    availability_zone => subnet.id
+  }
+}
+
 output "vpc_id" {
   description = "VPC ID used for the GHES appliance."
   value       = local.resolved_vpc_id

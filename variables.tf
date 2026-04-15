@@ -43,7 +43,7 @@ variable "ami_id_by_region" {
 
 variable "availability_zone" {
   default     = null
-  description = "Availability Zone for the module-managed subnet. When null, the module uses the first available zone."
+  description = "Legacy single-subnet Availability Zone input. Prefer primary_availability_zone together with subnet_cidr_blocks_by_availability_zone for multi-AZ VPC layouts."
   type        = string
 }
 
@@ -61,7 +61,7 @@ variable "create_eip" {
 
 variable "create_vpc" {
   default     = true
-  description = "Whether to create the VPC and subnet for the GHES appliance."
+  description = "Whether to create the VPC and subnets for the GHES appliance."
   type        = bool
 }
 
@@ -188,6 +188,21 @@ variable "instance_type" {
   type        = string
 }
 
+variable "primary_availability_zone" {
+  default     = null
+  description = "Availability Zone that hosts the standalone GHES appliance when the module manages the VPC. When null, the module uses availability_zone, the first key from subnet_cidr_blocks_by_availability_zone, or the first available zone."
+  type        = string
+
+  validation {
+    condition = var.primary_availability_zone == null || (
+      var.subnet_cidr_blocks_by_availability_zone != null ? contains(keys(var.subnet_cidr_blocks_by_availability_zone), var.primary_availability_zone) : (
+        var.availability_zone != null ? var.primary_availability_zone == var.availability_zone : true
+      )
+    )
+    error_message = "primary_availability_zone must match availability_zone, or be one of the keys in subnet_cidr_blocks_by_availability_zone when that map is provided."
+  }
+}
+
 variable "key_name" {
   default     = null
   description = "Optional EC2 key pair name to associate with the GHES appliance."
@@ -271,13 +286,31 @@ variable "root_volume_type" {
 }
 
 variable "subnet_cidr_block" {
-  default     = "10.0.0.0/24"
-  description = "CIDR block for the module-managed subnet."
+  default     = "10.0.0.0/26"
+  description = "CIDR block for the module-managed primary subnet when subnet_cidr_blocks_by_availability_zone is not provided."
   type        = string
 
   validation {
     condition     = can(cidrhost(var.subnet_cidr_block, 0))
     error_message = "subnet_cidr_block must be a valid IPv4 CIDR block."
+  }
+}
+
+variable "subnet_cidr_blocks_by_availability_zone" {
+  default     = null
+  description = "Optional map of Availability Zone names to CIDR blocks for module-managed subnets. Use this to create a regional VPC with one subnet per AZ."
+  type        = map(string)
+
+  validation {
+    condition     = var.subnet_cidr_blocks_by_availability_zone == null || length(var.subnet_cidr_blocks_by_availability_zone) > 0
+    error_message = "subnet_cidr_blocks_by_availability_zone must not be empty when provided."
+  }
+
+  validation {
+    condition = var.subnet_cidr_blocks_by_availability_zone == null || alltrue([
+      for cidr_block in values(var.subnet_cidr_blocks_by_availability_zone) : can(cidrhost(cidr_block, 0))
+    ])
+    error_message = "subnet_cidr_blocks_by_availability_zone must contain valid IPv4 CIDR blocks."
   }
 }
 
@@ -288,7 +321,7 @@ variable "tags" {
 }
 
 variable "vpc_cidr_block" {
-  default     = "10.0.0.0/16"
+  default     = "10.0.0.0/24"
   description = "CIDR block for the module-managed VPC."
   type        = string
 
