@@ -29,15 +29,32 @@ locals {
 
   git_ssh_allowed_cidr_blocks = var.create ? coalesce(var.git_ssh_allowed_cidr_blocks, var.admin_allowed_cidr_blocks) : []
 
+  managed_subnet_cidr_blocks_by_availability_zone = !local.create_vpc ? {} : (
+    var.subnet_cidr_blocks_by_availability_zone != null ? {
+      for availability_zone in sort(keys(var.subnet_cidr_blocks_by_availability_zone)) :
+      availability_zone => var.subnet_cidr_blocks_by_availability_zone[availability_zone]
+      } : {
+      (local.selected_primary_availability_zone) = var.subnet_cidr_block
+    }
+  )
+
   resolved_kms_key_arn   = var.create ? coalesce(one(aws_kms_key.this[*].arn), var.kms_key_arn) : null
   root_volume_iops       = contains(["gp3", "io1", "io2"], var.root_volume_type) ? coalesce(var.root_volume_iops, 3000) : null
   root_volume_throughput = var.root_volume_type == "gp3" ? coalesce(var.root_volume_throughput, 125) : null
-  resolved_subnet_id     = var.create ? one(concat(aws_subnet.this[*].id, data.aws_subnet.existing[*].id)) : null
-  resolved_vpc_id        = var.create ? one(concat(aws_vpc.this[*].id, data.aws_subnet.existing[*].vpc_id)) : null
+  resolved_subnet_id = var.create ? coalesce(
+    try(aws_subnet.this[local.selected_primary_availability_zone].id, null),
+    try(one(data.aws_subnet.existing[*].id), null),
+  ) : null
+  resolved_vpc_id = var.create ? coalesce(
+    try(one(aws_vpc.this[*].id), null),
+    try(one(data.aws_subnet.existing[*].vpc_id), null),
+  ) : null
 
-  selected_availability_zone = coalesce(
+  selected_primary_availability_zone = !local.create_vpc ? null : coalesce(
+    var.primary_availability_zone,
     var.availability_zone,
-    one(data.aws_availability_zones.available[*].names[0]),
+    try(sort(keys(var.subnet_cidr_blocks_by_availability_zone))[0], null),
+    try(one(data.aws_availability_zones.available[*].names[0]), null),
   )
 }
 
@@ -83,20 +100,20 @@ resource "aws_route" "internet_gateway" {
 }
 
 resource "aws_subnet" "this" {
-  count = local.create_vpc ? 1 : 0
+  for_each = local.create_vpc ? local.managed_subnet_cidr_blocks_by_availability_zone : {}
 
-  availability_zone       = local.selected_availability_zone
-  cidr_block              = var.subnet_cidr_block
+  availability_zone       = each.key
+  cidr_block              = each.value
   map_public_ip_on_launch = false
   tags                    = local.default_tags
   vpc_id                  = aws_vpc.this[0].id
 }
 
 resource "aws_route_table_association" "this" {
-  count = local.create_vpc ? 1 : 0
+  for_each = local.create_vpc ? aws_subnet.this : {}
 
   route_table_id = aws_route_table.this[0].id
-  subnet_id      = aws_subnet.this[0].id
+  subnet_id      = each.value.id
 }
 
 resource "aws_security_group" "this" {
