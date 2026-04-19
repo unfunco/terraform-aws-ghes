@@ -12,7 +12,9 @@ data "aws_availability_zones" "available" {
 }
 
 data "aws_subnet" "existing" {
-  count = var.create && !var.create_vpc && var.existing_subnet_id != null ? 1 : 0
+  # existing_subnet_id may be computed from another module output, which leaves it
+  # unknown during planning even though module validation still guarantees it exists.
+  count = var.create && !var.create_vpc ? 1 : 0
 
   id = var.existing_subnet_id
 }
