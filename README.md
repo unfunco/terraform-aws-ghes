@@ -1,11 +1,13 @@
 # terraform-aws-ghes
 
-Terraform module for launching a [GitHub Enterprise Server] appliance on AWS.
+Terraform module for launching a single [GitHub Enterprise Server] appliance on
+Amazon Web Services.
 
 ## Getting started
 
 ### Requirements
 
+- [AWS Command Line Interface] 2+
 - [Terraform] 1.14+
 
 ### Usage instructions
@@ -14,7 +16,8 @@ Terraform module for launching a [GitHub Enterprise Server] appliance on AWS.
 
 ```terraform
 module "ghes" {
-  source = "git:github.com/hachinekoresearch/terraform-aws-ghes.git?ref=v0.0.0"
+  source = "github.com/hachinekoresearch/terraform-aws-ghes?ref=v0.0.0"
+  ami_id = "ami-0123456789abcdef0"
 }
 ```
 
@@ -34,6 +37,7 @@ aws ec2 describe-images \
 © 2026 [Hachineko Research].\
 Made available under the terms of the [MIT Licence].
 
+[aws command line interface]: https://aws.amazon.com/cli/
 [github enterprise server]: https://docs.github.com/en/enterprise-server
 [hachineko research]: https://hachineko.io
 [mit licence]: LICENSE.md

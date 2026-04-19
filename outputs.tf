@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 output "ami_id" {
-  description = "AMI ID selected for the GHES appliance."
+  description = "AMI ID provided for the GHES appliance."
   value       = local.resolved_ami_id
 }
 
