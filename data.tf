@@ -5,10 +5,6 @@ data "aws_partition" "this" {
   count = var.create ? 1 : 0
 }
 
-data "aws_region" "this" {
-  count = var.create ? 1 : 0
-}
-
 data "aws_availability_zones" "available" {
   count = var.create && var.create_vpc && var.primary_availability_zone == null && var.availability_zone == null && var.subnet_cidr_blocks_by_availability_zone == null ? 1 : 0
 

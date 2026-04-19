@@ -15,17 +15,8 @@ locals {
     "terraform-module" = "hachinekoresearch/terraform-aws-ghes"
   }, var.tags)
 
-  resolved_ami_id = !var.create ? null : (
-    var.ami_id != null ? trimspace(var.ami_id) : try(
-      length(trimspace(var.ami_id_by_region[data.aws_region.this[0].region])) > 0
-      ? trimspace(var.ami_id_by_region[data.aws_region.this[0].region])
-      : null,
-      null
-    )
-  )
-
-  appliance_ami_id    = coalesce(local.resolved_ami_id, "ami-00000000000000000")
-  appliance_public_ip = one(aws_eip.this[*].public_ip)
+  appliance_ami_id    = local.resolved_ami_id
+  appliance_public_ip = try(one(aws_eip.this[*].public_ip), null)
 
   git_ssh_allowed_cidr_blocks = var.create ? coalesce(var.git_ssh_allowed_cidr_blocks, var.admin_allowed_cidr_blocks) : []
 
@@ -38,13 +29,16 @@ locals {
     }
   )
 
+  resolved_ami_id        = trimspace(var.ami_id)
   resolved_kms_key_arn   = var.create ? coalesce(one(aws_kms_key.this[*].arn), var.kms_key_arn) : null
   root_volume_iops       = contains(["gp3", "io1", "io2"], var.root_volume_type) ? coalesce(var.root_volume_iops, 3000) : null
   root_volume_throughput = var.root_volume_type == "gp3" ? coalesce(var.root_volume_throughput, 125) : null
+
   resolved_subnet_id = var.create ? coalesce(
     try(aws_subnet.this[local.selected_primary_availability_zone].id, null),
     try(one(data.aws_subnet.existing[*].id), null),
   ) : null
+
   resolved_vpc_id = var.create ? coalesce(
     try(one(aws_vpc.this[*].id), null),
     try(one(data.aws_subnet.existing[*].vpc_id), null),
@@ -245,11 +239,6 @@ resource "aws_instance" "this" {
   tags                        = local.default_tags
 
   lifecycle {
-    precondition {
-      condition     = local.resolved_ami_id != null
-      error_message = "Provide ami_id or populate ami_id_by_region for the current AWS region."
-    }
-
     precondition {
       condition     = var.create_vpc || var.existing_subnet_id != null
       error_message = "existing_subnet_id must be set when create_vpc is false."

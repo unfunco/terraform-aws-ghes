@@ -15,29 +15,12 @@ variable "admin_allowed_cidr_blocks" {
 }
 
 variable "ami_id" {
-  default     = null
-  description = "AMI ID for the GHES appliance. When null, the module uses the current AWS region entry from ami_id_by_region."
+  description = "AMI ID for the GHES appliance. Consumers must provide this explicitly."
   type        = string
 
   validation {
-    condition     = var.ami_id == null || can(regex("^ami-[0-9a-f]+$", var.ami_id))
-    error_message = "ami_id must look like an AWS AMI ID."
-  }
-}
-
-variable "ami_id_by_region" {
-  default = {
-    "eu-west-1" = "ami-0dab408a3ff685ac9" # GHES 3.19.4
-  }
-
-  description = "AWS region-to-GHES AMI ID map. Set the current region entry, or set ami_id directly."
-  type        = map(string)
-
-  validation {
-    condition = alltrue([
-      for mapped_ami_id in values(var.ami_id_by_region) : trimspace(mapped_ami_id) == "" || can(regex("^ami-[0-9a-f]+$", trimspace(mapped_ami_id)))
-    ])
-    error_message = "ami_id_by_region values must be empty strings or valid AWS AMI IDs."
+    condition     = can(regex("^ami-[0-9a-f]+$", trimspace(var.ami_id)))
+    error_message = "ami_id must be provided and look like an AWS AMI ID."
   }
 }
 
