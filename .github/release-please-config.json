@@ -19,7 +19,7 @@
           "type": "chore"
         }
       ],
-      "draft": true,
+      "draft": false,
       "extra-files": [
         {
           "path": "README.md",
@@ -36,4 +36,3 @@
     }
   }
 }
-
