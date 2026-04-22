@@ -37,7 +37,7 @@ resource "aws_instance" "this" {
   count = var.create ? 1 : 0
 
   ami                         = local.appliance_ami_id
-  associate_public_ip_address = false
+  associate_public_ip_address = var.create_eip
   ebs_optimized               = var.ebs_optimized
   iam_instance_profile        = var.instance_profile_name
   instance_type               = var.instance_type
