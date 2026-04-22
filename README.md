@@ -17,7 +17,7 @@ route table, and security group management to the calling stack.
 
 ```terraform
 module "ghes" {
-  source = "github.com/hachinekoresearch/terraform-aws-ghes?ref=v0.0.0"
+  source = "github.com/hachinekoresearch/terraform-aws-ghes?ref=v0.1.0"
   ami_id                 = "ami-0123456789abcdef0"
   subnet_id              = "subnet-0123456789abcdef0"
   vpc_security_group_ids = ["sg-0123456789abcdef0"]
