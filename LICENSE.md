@@ -1,6 +1,6 @@
 # MIT License
 
-Copyright © 2026 [Daniel Morris](mailto:unfunco@github.com)
+Copyright © 2026 [Daniel Morris](https://unfun.co)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
