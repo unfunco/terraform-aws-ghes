@@ -9,7 +9,7 @@ locals {
   data_volume_throughput = var.data_volume_type == "gp3" ? coalesce(var.data_volume_throughput, 125) : null
 
   default_tags = merge({
-    "terraform-module" = "hachinekoresearch/terraform-aws-ghes"
+    "terraform-module" = "unfunco/terraform-aws-ghes"
   }, var.tags)
 
   appliance_ami_id = local.resolved_ami_id
