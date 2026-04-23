@@ -18,6 +18,7 @@ route table, and security group management to the calling stack.
 ```terraform
 module "ghes" {
   source = "github.com/hachinekoresearch/terraform-aws-ghes?ref=v0.1.0"
+  
   ami_id                 = "ami-0123456789abcdef0"
   subnet_id              = "subnet-0123456789abcdef0"
   vpc_security_group_ids = ["sg-0123456789abcdef0"]
@@ -37,11 +38,11 @@ aws ec2 describe-images \
 
 ## License
 
-© 2026 [Hachineko Research].\
+© 2026 [Daniel Morris].\
 Made available under the terms of the [MIT Licence].
 
 [aws command line interface]: https://aws.amazon.com/cli/
+[daniel morris]: https://unfun.co
 [github enterprise server]: https://docs.github.com/en/enterprise-server
-[hachineko research]: https://hachineko.io
 [mit licence]: LICENSE.md
 [terraform]: https://developer.hashicorp.com/terraform
