@@ -1,0 +1,62 @@
+name: PR / Label
+
+on:
+  pull_request_target:
+    types: [ edited, opened ]
+
+jobs:
+  triage:
+    name: Triage
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+    runs-on: ubuntu-slim
+    steps:
+    - name: Apply labels based on the PR title
+      uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+      with:
+        script: |
+          const prefixToLabelMap = {
+            'fix 🐛': 'fix:',
+            'chore 🧹': 'chore:',
+            'feature 🎉': 'feat:',
+            'refactor 🔧': 'refactor:',
+          }
+
+          const managedLabels = new Set(Object.keys(prefixToLabelMap))
+          const labelsToAdd = []
+
+          for (const [label, prefix] of Object.entries(prefixToLabelMap)) {
+            if (context.payload.pull_request.title.startsWith(prefix)) {
+              labelsToAdd.push(label)
+            }
+          }
+
+          const { data: currentLabels } = await github.rest.issues.listLabelsOnIssue({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+          })
+
+          const labelsToRemove = currentLabels
+            .filter(l => managedLabels.has(l.name) && !labelsToAdd.includes(l.name))
+            .map(l => l.name)
+
+          for (const label of labelsToRemove) {
+            await github.rest.issues.removeLabel({
+              issue_number: context.issue.number,
+              name: label,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            })
+          }
+
+          if (labelsToAdd.length > 0) {
+            await github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              labels: labelsToAdd,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            })
+          }
