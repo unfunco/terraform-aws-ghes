@@ -1,0 +1,32 @@
+version: 2
+
+updates:
+- package-ecosystem: github-actions
+  commit-message:
+    prefix: chore
+    prefix-development: chore
+  directory: "/"
+  labels:
+  - chore 🧹
+  - workflows 👷‍♀️
+  pull-request-branch-name:
+    separator: /
+  reviewers:
+  - unfunco
+  schedule:
+    day: sunday
+    interval: weekly
+- package-ecosystem: terraform
+  commit-message:
+    prefix: chore
+    prefix-development: chore
+  directory: "/"
+  labels:
+  - chore 🧹
+  pull-request-branch-name:
+    separator: /
+  reviewers:
+  - unfunco
+  schedule:
+    day: sunday
+    interval: weekly
