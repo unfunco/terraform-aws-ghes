@@ -123,17 +123,6 @@ variable "kms_key_arn" {
   }
 }
 
-variable "root_volume_size" {
-  default     = 400
-  description = "Size in GiB for the encrypted GHES root disk. GHES currently requires at least 400 GiB, and this disk is separate from the data volume."
-  type        = number
-
-  validation {
-    condition     = var.root_volume_size >= 400
-    error_message = "root_volume_size must be at least 400 GiB for current GHES releases."
-  }
-}
-
 variable "root_volume_iops" {
   default     = null
   description = "Provisioned IOPS for the GHES root volume when using gp3, io1, or io2. Defaults to 3000 when the selected volume type supports configurable IOPS."
@@ -147,6 +136,17 @@ variable "root_volume_iops" {
   validation {
     condition     = var.root_volume_iops == null || contains(["gp3", "io1", "io2"], var.root_volume_type)
     error_message = "root_volume_iops can be set only when root_volume_type is gp3, io1, or io2."
+  }
+}
+
+variable "root_volume_size" {
+  default     = 400
+  description = "Size in GiB for the encrypted GHES root disk. GHES currently requires at least 400 GiB, and this disk is separate from the data volume."
+  type        = number
+
+  validation {
+    condition     = var.root_volume_size >= 400
+    error_message = "root_volume_size must be at least 400 GiB for current GHES releases."
   }
 }
 
@@ -189,7 +189,7 @@ variable "subnet_id" {
 
 variable "tags" {
   default     = {}
-  description = "Additional tags to apply to module-managed resources."
+  description = "Tags to be applied to all applicable resources."
   type        = map(string)
 }
 
