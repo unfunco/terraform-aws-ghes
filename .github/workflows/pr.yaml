@@ -14,6 +14,16 @@ jobs:
       uses: hashicorp/setup-terraform@5e8dbf3c6d9deaf4193ca7a8fb23f2ac83bb6c85 # v4.0.0
       with:
         terraform_version: 1.14.7
+    - name: Set up Node.js
+      uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+      with:
+        node-version: 24
+    - name: Render Terraform docs
+      uses: terraform-docs/gh-actions@6de6da0cefcc6b4b7a5cbea4d79d97060733093c # v1.4.1
+    - name: Ensure docs are up to date
+      run: |
+        npx --yes prettier@3.8.3 --write '**/*.md'
+        git diff --exit-code
     - name: Check formatting
       run: terraform fmt -check -recursive
     - name: Initialise with no backend
