@@ -25,7 +25,7 @@ jobs:
     - name: Ensure docs are up to date
       run: |
         npx --yes prettier@3.8.3 --write '**/*.md'
-        git diff --exit-code
+        git diff --exit-code HEAD
     - name: Check formatting
       run: terraform fmt -check -recursive
     - name: Initialise with no backend
