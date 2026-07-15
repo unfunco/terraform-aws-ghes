@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.2.0](https://github.com/unfunco/terraform-aws-ghes/compare/v0.1.0...v0.2.0) (2026-07-15)
+
+
+### 🎉 New features
+
+* Add a complete HA example ([#14](https://github.com/unfunco/terraform-aws-ghes/issues/14)) ([f1e9b3d](https://github.com/unfunco/terraform-aws-ghes/commit/f1e9b3d70e6349d6b9a6991baa6d855644061e4f))
+* Add documentation to README ([#19](https://github.com/unfunco/terraform-aws-ghes/issues/19)) ([b470d8c](https://github.com/unfunco/terraform-aws-ghes/commit/b470d8c330fd411a1236900e9d2f426620fc5ee9))
+
+
+### 🐛 Bug fixes
+
+* Disable draft Release Please releases ([#13](https://github.com/unfunco/terraform-aws-ghes/issues/13)) ([085b7cf](https://github.com/unfunco/terraform-aws-ghes/commit/085b7cfe8ab7e317dd497561d6c44f24917c6eb1))
+
+
+### 🧹 Miscellaneous
+
+* Add a Dependabot workflow ([#17](https://github.com/unfunco/terraform-aws-ghes/issues/17)) ([97b27db](https://github.com/unfunco/terraform-aws-ghes/commit/97b27db9d826c850f3c503cbef5e812fd0a216ca))
+* Add a workflow to automatically label PRs ([#16](https://github.com/unfunco/terraform-aws-ghes/issues/16)) ([4d8301f](https://github.com/unfunco/terraform-aws-ghes/commit/4d8301fcb6eec38b9927c372edf9a517385edae5))
+* Bump actions/checkout from 6.0.2 to 7.0.0 ([#22](https://github.com/unfunco/terraform-aws-ghes/issues/22)) ([7d7d7c8](https://github.com/unfunco/terraform-aws-ghes/commit/7d7d7c8ee92fd7eb98ff6221e80d81a9cd95f018))
+* Bump googleapis/release-please-action from 4.4.0 to 5.0.0 ([#18](https://github.com/unfunco/terraform-aws-ghes/issues/18)) ([565c659](https://github.com/unfunco/terraform-aws-ghes/commit/565c6598880252514aa2c7b0fe695b7179466cf8))
+* Bump hashicorp/setup-terraform from 4.0.0 to 4.0.1 ([#20](https://github.com/unfunco/terraform-aws-ghes/issues/20)) ([9c45986](https://github.com/unfunco/terraform-aws-ghes/commit/9c45986f133995866e5bfec4e4c1489c1df302ce))
+* Make [@unfunco](https://github.com/unfunco) the license holder ([#15](https://github.com/unfunco/terraform-aws-ghes/issues/15)) ([19c27e5](https://github.com/unfunco/terraform-aws-ghes/commit/19c27e58e1d5616feee9ffee5400c8076b4b462a))
+* Upgrade pinned AWS provider in complete example to 6.54.0 ([#23](https://github.com/unfunco/terraform-aws-ghes/issues/23)) ([0927bb7](https://github.com/unfunco/terraform-aws-ghes/commit/0927bb75aac798c915c257b07fb5f7203c744dc9))
+
 ## 0.1.0 (2026-04-22)
 
 ### 🎉 New features
