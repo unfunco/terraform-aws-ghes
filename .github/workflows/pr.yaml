@@ -25,14 +25,11 @@ jobs:
 
   terraform-module:
     name: Verify Terraform (module)
-    uses: unfunco/meta/.github/workflows/verify-terraform.yaml@dc15f9a32fe01b1b7cc44e095ab9e9bdd98bb0b7
-    with:
-      terraform-version-file: .terraform-version
-      working-directory: .
+    uses: unfunco/meta/.github/workflows/verify-terraform.yaml@2cf07936a31dca1b82fe1e447f48e1580c10880e # v0.2.0
 
   terraform-example:
     name: Verify Terraform (complete example)
-    uses: unfunco/meta/.github/workflows/verify-terraform.yaml@dc15f9a32fe01b1b7cc44e095ab9e9bdd98bb0b7
+    uses: unfunco/meta/.github/workflows/verify-terraform.yaml@2cf07936a31dca1b82fe1e447f48e1580c10880e # v0.2.0
     with:
       terraform-version-file: .terraform-version
       working-directory: examples/complete
