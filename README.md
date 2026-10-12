@@ -18,7 +18,7 @@ route table, and security group management to the calling stack.
 ```terraform
 module "ghes" {
   source  = "unfunco/ghes/aws"
-  version = "0.1.0"
+  version = "0.2.0"
 
   ami_id                 = "ami-0123456789abcdef0"
   subnet_id              = "subnet-0123456789abcdef0"
